@@ -22,7 +22,8 @@ aberfh,JZ3621430166
 
 
 if __name__ == '__main__':
-    ipf = IPFClient(base_url='https://daisy.ja.net/', auth='4932f6abf6b0184e9b042b49dbf6f595', verify=False, timeout=15)
+    IPFabricKey=<key>
+    ipf = IPFClient(base_url='https://daisy.ja.net/', auth=IPFabricKey, verify=False, timeout=15)
     ## remove the snapshot_id variable to make this a change to global attributes rather than local to a single snapshot
     ipf_attr = Attributes(client=ipf, snapshot_id='be025b90-7b74-44a5-abfb-106a37658311')
     df = pd.read_csv(r'sites.csv') ## load file

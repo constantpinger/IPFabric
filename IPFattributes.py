@@ -1,6 +1,3 @@
-"""
-attributes.py
-"""
 from pprint import pprint
 import pandas as pd
 from ipfabric import IPFClient
@@ -9,30 +6,40 @@ from ipfabric.settings import Attributes
 
 ##  Sample CSV file
 """
-siteName,Serial Number
-ab-witney-col,DS1223AN0042
-ab-witney-col-hb,CZ2319AF0073
-aberew,JN11F37B3AFB
-aberew,JZ3621430280
-aberfh,JN1172337AFB
-aberfh,JZ3621430166
+siteName,Serial Number,Jisc_region
+ab-witney-col,DS1223AN0042,Southeast
+ab-witney-col-hb,CZ2319AF0073,Southeast
 """
 
-
+#variable to decide action below, could be used in a CLI toggle
+switch="global"
+switch="local"
 
 
 if __name__ == '__main__':
-    IPFabricKey=<key>
-    ipf = IPFClient(base_url='https://daisy.ja.net/', auth=IPFabricKey, verify=False, timeout=15)
-    ## remove the snapshot_id variable to make this a change to global attributes rather than local to a single snapshot
-    ipf_attr = Attributes(client=ipf, snapshot_id='be025b90-7b74-44a5-abfb-106a37658311')
-    df = pd.read_csv(r'sites.csv') ## load file
-    site_attributes = [{'value': row['siteName'], 'sn': row['Serial Number']} for index, row in df.iterrows()]  # normalise data
-    sites = ipf_attr.set_sites_by_sn(site_attributes)  #send to IPF via API call
-    #pprint(sites)
-    #resp = ipf_attr.set_attributes_by_sn(attributes)  # Set a list of attributes, will update if already set
+    ipf = IPFClient(base_url='https://<server>/', auth='<API key>', verify=False, timeout=15)
+    snapshot_id='9f3bd47a-f2d4-4936-95db-0a65843f4701'
+    #snapshot_id='$last'
+    ipf_attr = Attributes(client=ipf, snapshot_id=snapshot_id)
+    df = pd.read_csv(r'sites.csv')
+    site_attributes = [{'value': row['siteName'], 'sn': row['Serial Number'], 'name': 'siteName'} for index, row in df.iterrows()]
+    region_attributes = [{'value': row['Jisc_region'], 'sn': row['Serial Number'], 'name': 'Jisc_region'} for index, row in df.iterrows()]
 
-
-
+    if switch == "local":
+        print("Setting attribtues for snapshot: " + snapshot_id )
+        sites = ipf_attr.set_sites_by_sn(site_attributes)
+        pprint(sites)
+        resp = ipf_attr.set_attributes_by_sn(region_attributes)
+        pprint(resp)
+    elif switch == "global":
+        resp = ipf.settings.global_attributes.set_attributes_by_sn(site_attributes)
+        resp2 = ipf.settings.global_attributes.set_attributes_by_sn(region_attributes)
+        pprint(resp)
+        pprint(resp2)
+    elif switch == "delete":
+        for row in range(0,len(df)):
+            serial=df.iat[row,1]
+            resp = ipf.settings.global_attributes.delete_attribute_by_sn(serial)
+            print("Deleted global attributes for device: " + df.iat[row,0])
 
 

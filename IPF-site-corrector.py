@@ -15,7 +15,7 @@ import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 snapshot_id='$last'  # replace with specific snapshot ID if required
-TOKEN = "4932f6abf6b0184e9b042b49dbf6f595"
+TOKEN = "<insert token here>" 
 payload = {"snapshot": snapshot_id,  "columns": [ "sn",    "hostname",    "name",    "value"  ],}  # The IPF specific params
 headers = {'Content-Type': 'application/json', 'X-API-Token': TOKEN}
 
@@ -31,13 +31,13 @@ def CheckNotMRS(sn, search_list):
         return True
 
 # Initiate SDK
-ipf = IPFClient(base_url='https://daisy.ja.net/', auth='4932f6abf6b0184e9b042b49dbf6f595', verify=False, timeout=15)
+ipf = IPFClient(base_url='https://ipf.server.net/', auth='4932f6abf6b0184e9b042b49dbf6f595', verify=False, timeout=15)
 
 # Supress only InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 # Get all attributes from the local snapshot
-GET_ALL = requests.post('https://daisy.ja.net/api/v7.0/tables/snapshot-attributes',  headers=headers , json = payload, verify=False)
+GET_ALL = requests.post('https://ipf.server.net/api/v7.0/tables/snapshot-attributes',  headers=headers , json = payload, verify=False)
 
 # Result is a dictionary containing a single entry with key=data - This is a list of dicts - Extract the json version and unpack to leave the list
 #  {'data': [{'sn': 'CZ5216AF1259', 'hostname': 'rau-ej', 'name': 'JanetRegion', 'value': 'SWR'},
